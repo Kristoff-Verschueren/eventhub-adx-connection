@@ -3,7 +3,6 @@
 This setup configures an Azure EventHub and an Azure Data Explorer (ADX) cluster. 
 EventHub automatically forwards messages to the ADX database for storage and analysis.
 
----
 
 ## Table of Contents
 - [Overview](#overview)
@@ -13,7 +12,6 @@ EventHub automatically forwards messages to the ADX database for storage and ana
 - [Verification](#verification)
 - [Cleanup](#cleanup)
 
----
 
 ## Overview
 
@@ -24,14 +22,11 @@ This solution includes:
 
 Messages are automatically processed via an EventHub Consumer Group and stored in the specified ADX database.
 
----
 
 ## Prerequisites
 - **Azure CLI** installed ([Installation Guide](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli))
-- An existing Azure Resource Group
-- Access to an Azure account with permissions to deploy resources
+- Access to an Azure account with permissions to deploy resources. And optional: permissions to create a ResourceGroup.
 
----
 
 ## Structure
 
@@ -39,11 +34,11 @@ The setup consists of the following files:
 - **bicep/**: All bicep files to deploy the resources to Azure.
 - **EventHubSender/**: Contains the console application to send events to the EventHub.
 
----
 
 ## Deployment
 
 ### Step 1: Create a Resource Group
+This step can be skipped if you already have a Resource Group.
 Ensure you have a Resource Group where the deployment will be executed:
 ```bash
 az group create --name eventhub-adx --location westeurope
@@ -64,7 +59,6 @@ Check the deployment through the Azure Portal or using the CLI:
 az resource list --resource-group eventhub-adx
 ```
 
----
 
 ## Verification
 
@@ -84,9 +78,18 @@ After running the application, the events will be available in the ADX database 
 ### ADX Query
 Query the `ExampleEvents` table to see the added records.
 
----
 
 ## Cleanup
+> [!CAUTION]
+> Be carefull with this section!
+
+### Delete the resource in the Resource Group
+```bash
+az kusto cluster delete --name "<Your ADX Name>" --resource-group "eventhub-adx" --yes --no-wait
+az eventhubs namespace delete --name "<Your EventHub Namespace Name>" --resource-group "eventhub-adx" --no-wait
+```
+
+### Delete the Resource Group
 To delete all resources:
 ```bash
 az group delete --name eventhub-adx --yes --no-wait
