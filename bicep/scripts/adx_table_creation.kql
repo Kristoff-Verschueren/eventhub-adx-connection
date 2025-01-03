@@ -1,0 +1,29 @@
+// Set Retention Policy
+.alter-merge database ['examples-database'] policy retention softdelete = 7d recoverability = disabled
+
+// Create a landing table for Event Hub's events
+.create-merge table ExampleEvents (
+    DateTime: datetime,
+    Status: string,
+    Info: dynamic,
+    Number: string,
+    Address: dynamic,
+    EventHubEnqueuedTime: datetime,
+    EventHubOffset: string
+)
+
+// Create mapping from JSON ingestion to landing table
+.create-or-alter table ExampleEvents ingestion json mapping "ExampleEventJson" 
+'['
+'    {"column":"DateTime","Properties":{"path":"$.dateTime"}},'
+'    {"column":"Status","Properties":{"path":"$.status"}},'
+'    {"column":"Info","Properties":{"path":"$.info"}},'
+'    {"column":"Number","Properties":{"path":"$.info.number"}},'
+'    {"column":"Address","Properties":{"path":"$.address"}},'
+'    {"column":"EventHubEnqueuedTime","Properties":{"path":"$.x-opt-enqueued-time"}},'
+'    {"column":"EventHubOffset","Properties":{"path":"$.x-opt-offset"}}'
+']'
+
+// We modify the ingestion batching policy to make it easy to see records coming ingestion
+// THIS CONFIGURATION SHOULDN'T BE USED IN PRODUCTION:  MaximumBatchingTimeSpan SHOULD BE AT LEAST 1 MINUTE
+.alter table ExampleEvents policy ingestionbatching "{'MaximumBatchingTimeSpan': '0:0:10', 'MaximumNumberOfItems': 10000}"

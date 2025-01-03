@@ -1,0 +1,13 @@
+{
+  "dateTime": "2025-01-03T05:00:00.0000000Z",
+  "status": "001",
+  "info": {
+    "number": "12345"
+  },
+  "address": {
+    "zipCode": "2018",
+    "city": "Antwerp",
+    "name": "Axxit BV",
+    "street": "Mechelsesteenweg"
+  }
+}
